@@ -67,48 +67,12 @@ app.get('/reset-password', (req, res) => {
         <body>
             <p>${userId}</p>
             <h1>Restablecer contraseña</h1>
-            <form id="resetPasswordForm">
+            <form method="post" action="/reset-password">
                 <input type="hidden" name="token" value="${token}" />
                 <label for="newPassword">Nueva contraseña:</label>
                 <input type="password" id="newPassword" name="newPassword" required />
                 <button type="submit">Restablecer</button>
             </form>
-
-            <script>
-                document.getElementById('resetPasswordForm').addEventListener('submit', async (event) => {
-                    event.preventDefault(); // Prevenir el envío normal del formulario
-                
-                    const token = document.querySelector('[name="token"]').value;
-                    const newPassword = document.getElementById('newPassword').value;
-                
-                    const data = { token, newPassword };
-                
-                    try {
-                        const response = await fetch('/reset-password', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(data),
-                        });
-                
-                        if (response.ok) {
-                            alert('Contraseña restablecida con éxito');
-                        } else {
-                            const errorData = await response.text(); // Usamos text() para obtener la respuesta como texto
-                            try {
-                                const jsonErrorData = JSON.parse(errorData); // Intentamos parsear como JSON
-                                alert(Error: ${jsonErrorData.message});
-                            } catch (jsonError) {
-                                alert(Error: ${errorData}); // Si no es JSON, mostramos el mensaje como texto
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Error al enviar la solicitud:', error);
-                        alert('Ocurrió un error al procesar la solicitud');
-                    }
-                });
-            </script>
         </body>
         </html>
     `;
