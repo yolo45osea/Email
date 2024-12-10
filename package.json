@@ -17,6 +17,7 @@
     "jsonwebtoken": "^9.0.2",
     "express": "^4.21.2",
     "bcryptjs": "^2.4.3",
+    "axios": "^1.7.9",
     "node": "^22.11.0"
   }
 }
