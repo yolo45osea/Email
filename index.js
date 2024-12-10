@@ -2,6 +2,7 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 const app = express();
 const port = 3000;
 
@@ -18,10 +19,8 @@ app.post('/send-email', async (req, res) => {
     try {
         const { to, subject, text, userId } = req.body;
 
-        const token = jwt.sign({ userId: userId }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
-        const resetLink = `https://email-logu.onrender.com/reset-password?token=${token}`;
 
-        emailText = `Haz clic en este enlace para restablecer tu contraseña: ${resetLink}`;
+        //emailText = `Haz clic en este enlace para restablecer tu contraseña: ${resetLink}`;
 
         let transporter = nodemailer.createTransport({
           host: "smtp.gmail.com",
@@ -40,7 +39,7 @@ app.post('/send-email', async (req, res) => {
             from: 'transferaeropuerto0@gmail.com',
             to,
             subject,
-            text: emailText
+            text
         };
 
         const info = await transporter.sendMail(mailOptions);
@@ -51,101 +50,81 @@ app.post('/send-email', async (req, res) => {
     }
 });
 
-const bcrypt = require('bcryptjs');
+/*const bcrypt = require('bcryptjs');
 
 app.get('/reset-password', (req, res) => {
-    const { token } = req.query;
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const userId = decoded.userId;
+  const { token } = req.query;
+  const decoded = jwt.verify(token, JWT_SECRET);
+  const userId = decoded.userId;
 
-    const emailFormHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Restablecer contraseña</title>
-        </head>
-        <body>
-            <p>${userId}</p>
-            <h1>Restablecer contraseña</h1>
-            <form method="post" action="/reset-password">
-                <input type="hidden" name="token" value="${token}" />
-                <label for="newPassword">Nueva contraseña:</label>
-                <input type="password" id="newPassword" name="newPassword" required />
-                <button type="submit">Restablecer</button>
-            </form>
+  const emailFormHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <title>Restablecer contraseña</title>
+      </head>
+      <body>
+          <p>${userId}</p>
+          <h1>Restablecer contraseña</h1>
+          <form id="myForm">
+              <input type="hidden" name="token" value="${token}" />
+              <label for="newPassword">Nueva contraseña:</label>
+              <input type="password" id="newPassword" name="newPassword" required />
+              <button type="submit">Restablecer</button>
+          </form>
 
-            <script>
-                document.getElementById('resetPasswordForm').addEventListener('submit', async (event) => {
-                    event.preventDefault(); // Prevenir el envío normal del formulario
-        
-                    const token = document.querySelector('[name="token"]').value;
-                    const newPassword = document.getElementById('newPassword').value;
-        
-                    const data = { token, newPassword };
-        
-                    try {
-                        const response = await fetch('/reset-password', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(data),
-                        });
-        
-                        if (response.ok) {
-                            alert('Contraseña restablecida con éxito');
-                        } else {
-                            const errorData = await response.json();
-                            alert(\`Error: \${errorData.message}\`);
-                        }
-                    } catch (error) {
-                        console.error('Error al enviar la solicitud:', error);
-                        alert('Ocurrió un error al procesar la solicitud');
-                    }
+          <script>
+              document.getElementById('myForm').addEventListener('submit', function(event) {
+                event.preventDefault();  // Evita que el formulario se envíe de manera tradicional
+
+                const pass = document.getElementById('newPassword').value;
+                const token = document.querySelector('input[name="token"]').value;
+
+                // Envía la nueva contraseña al backend para actualizar el usuario
+                fetch('/update-password', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ token, newPassword: pass })
+                })
+                .then(response => response.json())
+                .then(data => {
+                  console.log('Éxito:', data);
+                })
+                .catch(error => {
+                  console.error('Error:', error);
                 });
-            </script>
-        </body>
-        </html>
-    `;
+              });
+          </script>
+      </body>
+      </html>
+  `;
 
-    res.send(emailFormHTML);
+  res.send(emailFormHTML);
 });
 
-app.post('/reset-password', async (req, res) => {
-    const { token, newPassword } = req.body;
+app.post('/update-password', (req, res) => {
+  const { token, newPassword } = req.body;
+  const decoded = jwt.verify(token, JWT_SECRET);
+  const userId = decoded.userId;
 
-    if (!token) {
-        return res.status(400).send('Token no proporcionado');
-    }
-
-    try {
-        // Verificar token
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId;
-
-        const { data: users } = await axios.get(USERS_URL);
-
-        // Buscar al usuario por ID
-        const userIndex = users.findIndex(u => u.id === userId);
-        if (userIndex === -1) {
+  // Aquí debes actualizar la contraseña en tu base de datos
+  // Este es un ejemplo simple, adaptado a tu estructura de base de datos
+  User.findById(userId, (err, user) => {
+      if (err || !user) {
           return res.status(404).json({ message: 'Usuario no encontrado' });
-        }
+      }
 
-        users[userIndex].password = newPassword;
-
-        await axios.put(USERS_URL, users);
-
-        // Actualizar la contraseña del usuario en la base de datos (simulado aquí)
-        console.log(`Actualizando la contraseña para el usuario con ID ${userId}`);
-        // Aquí debes hacer la lógica de actualización en tu base de datos
-
-        // Responder al cliente
-        res.send('Contraseña restablecida con éxito');
-    } catch (error) {
-        console.error(error);
-        res.status(400).send('Token inválido o expirado');
-    }
-});
+      user.password = newPassword;  // Actualiza la contraseña
+      user.save((err) => {
+          if (err) {
+              return res.status(500).json({ message: 'Error al actualizar la contraseña' });
+          }
+          res.json({ message: 'Contraseña actualizada con éxito' });
+      });
+  });
+});*/
 
 
 app.listen(port, () => console.log('Servidor corriendo en ', port));
