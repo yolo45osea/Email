@@ -19,7 +19,7 @@ app.post('/send-email', async (req, res) => {
         const token = jwt.sign({ userId: userId }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
         const resetLink = `http://localhost:3000/reset-password?token=${token}`;
 
-        text = `Haz clic en este enlace para restablecer tu contraseña: ${resetLink}`;
+        emailText = `Haz clic en este enlace para restablecer tu contraseña: ${resetLink}`;
 
         let transporter = nodemailer.createTransport({
           host: "smtp.gmail.com",
@@ -38,7 +38,7 @@ app.post('/send-email', async (req, res) => {
             from: 'transferaeropuerto0@gmail.com',
             to,
             subject,
-            text
+            text: emailText
         };
 
         const info = await transporter.sendMail(mailOptions);
