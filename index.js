@@ -98,9 +98,9 @@ app.get('/reset-password', (req, res) => {
                             const errorData = await response.text(); // Usamos text() para obtener la respuesta como texto
                             try {
                                 const jsonErrorData = JSON.parse(errorData); // Intentamos parsear como JSON
-                                alert(`Error: ${jsonErrorData.message}`);
+                                alert(Error: ${jsonErrorData.message});
                             } catch (jsonError) {
-                                alert(`Error: ${errorData}`); // Si no es JSON, mostramos el mensaje como texto
+                                alert(Error: ${errorData}); // Si no es JSON, mostramos el mensaje como texto
                             }
                         }
                     } catch (error) {
