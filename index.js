@@ -26,7 +26,7 @@ app.post('/send-email', async (req, res) => {
         });
 
         const mailOptions = {
-            from: 'benj.romeroc@duocuc.cl',
+            from: 'transferaeropuerto0@gmail.com',
             to,
             subject,
             text
