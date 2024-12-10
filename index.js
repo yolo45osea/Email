@@ -77,12 +77,12 @@ app.get('/reset-password', (req, res) => {
             <script>
                 document.getElementById('resetPasswordForm').addEventListener('submit', async (event) => {
                     event.preventDefault(); // Prevenir el envío normal del formulario
-        
+                
                     const token = document.querySelector('[name="token"]').value;
                     const newPassword = document.getElementById('newPassword').value;
-        
+                
                     const data = { token, newPassword };
-        
+                
                     try {
                         const response = await fetch('/reset-password', {
                             method: 'POST',
@@ -91,12 +91,17 @@ app.get('/reset-password', (req, res) => {
                             },
                             body: JSON.stringify(data),
                         });
-        
+                
                         if (response.ok) {
                             alert('Contraseña restablecida con éxito');
                         } else {
-                            const errorData = await response.json();
-                            alert(\`Error: \${errorData.message}\`);
+                            const errorData = await response.text(); // Usamos text() para obtener la respuesta como texto
+                            try {
+                                const jsonErrorData = JSON.parse(errorData); // Intentamos parsear como JSON
+                                alert(`Error: ${jsonErrorData.message}`);
+                            } catch (jsonError) {
+                                alert(`Error: ${errorData}`); // Si no es JSON, mostramos el mensaje como texto
+                            }
                         }
                     } catch (error) {
                         console.error('Error al enviar la solicitud:', error);
