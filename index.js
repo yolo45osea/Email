@@ -80,6 +80,10 @@ app.get('/reset-password', (req, res) => {
 app.post('/reset-password', async (req, res) => {
     const { token, newPassword } = req.body;
 
+    if (!token) {
+        return res.status(400).send('Token no proporcionado');
+    }
+
     try {
         // Verificar token
         const decoded = jwt.verify(token, JWT_SECRET);
