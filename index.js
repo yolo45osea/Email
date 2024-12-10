@@ -2,6 +2,7 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 const app = express();
+const port = process.env.PORT || 3000;
 
 // Configurar CORS para permitir todo
 app.use(cors());
@@ -39,4 +40,4 @@ app.post('/send-email', async (req, res) => {
     }
 });
 
-app.listen(3000, () => console.log('Servidor corriendo en http://localhost:3000'));
+app.listen(port, () => console.log('Servidor corriendo en ', port));
