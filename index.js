@@ -51,35 +51,25 @@ app.post('/send-email', async (req, res) => {
 
 const bcrypt = require('bcryptjs');
 
-app.post('/reset-password', async (req, res) => {
-  const { token, newPassword } = req.body;
-
-  try {
-    // Verificar token
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const userId = decoded.userId;
-
-    // Obtener usuarios desde la nube
-    const { data: users } = await axios.get(USERS_URL);
-
-    // Buscar al usuario por ID
-    const userIndex = users.findIndex(u => u.id === userId);
-    if (userIndex === -1) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
-
-    // Encriptar nueva contraseña
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    users[userIndex].password = hashedPassword;
-
-    // Enviar los datos actualizados a la nube (suponiendo que la API permite POST/PUT)
-    await axios.put(USERS_URL, users); // Asegúrate de que tu endpoint soporte PUT
-
-    res.status(200).json({ message: 'Contraseña actualizada con éxito' });
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: 'Token inválido o expirado' });
-  }
+app.get('/reset-password', (req, res) => {
+    const { token } = req.query;
+    res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Restablecer contraseña</title>
+        </head>
+        <body>
+            <h1>Restablecer contraseña</h1>
+            <form action="/reset-password" method="POST">
+                <input type="hidden" name="token" value="${token}" />
+                <label for="newPassword">Nueva contraseña:</label>
+                <input type="password" id="newPassword" name="newPassword" required />
+                <button type="submit">Restablecer</button>
+            </form>
+        </body>
+        </html>
+    `);
 });
 
 
