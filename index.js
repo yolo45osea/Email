@@ -8,6 +8,9 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
+const JWT_SECRET = 'your-secret-key';
+const JWT_EXPIRATION = '1h';
+
 app.post('/send-email', async (req, res) => {
     try {
         const { to, subject, text, userId } = req.body;
