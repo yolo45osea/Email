@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const port = 3000;
 
+const USERS_URL = 'https://usuarios-1-hwrj.onrender.com/choferes'
+
 // Configurar CORS para permitir todo
 app.use(cors());
 app.use(express.json());
@@ -73,6 +75,38 @@ app.get('/reset-password', (req, res) => {
         </body>
         </html>
     `);
+});
+
+app.post('/reset-password', async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    try {
+        // Verificar token
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const userId = decoded.userId;
+
+        const { data: users } = await axios.get(USERS_URL);
+
+        // Buscar al usuario por ID
+        const userIndex = users.findIndex(u => u.id === userId);
+        if (userIndex === -1) {
+          return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        users[userIndex].password = newPassword;
+
+        await axios.put(USERS_URL, users);
+
+        // Actualizar la contraseña del usuario en la base de datos (simulado aquí)
+        console.log(`Actualizando la contraseña para el usuario con ID ${userId}`);
+        // Aquí debes hacer la lógica de actualización en tu base de datos
+
+        // Responder al cliente
+        res.send('Contraseña restablecida con éxito');
+    } catch (error) {
+        console.error(error);
+        res.status(400).send('Token inválido o expirado');
+    }
 });
 
 
