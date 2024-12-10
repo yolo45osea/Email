@@ -22,7 +22,9 @@ app.post('/send-email', async (req, res) => {
           },
           tls: {
             rejectUnauthorized: false
-          }
+          },
+          logger: true,  // Activar logs
+          debug: true    // Para obtener detalles del proceso de conexión
         });
 
         const mailOptions = {
