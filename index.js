@@ -57,14 +57,15 @@ app.get('/reset-password', (req, res) => {
     const { token } = req.query;
     const decoded = jwt.verify(token, JWT_SECRET);
     const userId = decoded.userId;
-    res.send(`
+
+    const emailFormHTML = `
         <!DOCTYPE html>
         <html>
         <head>
             <title>Restablecer contraseña</title>
         </head>
         <body>
-            <p>${userId}</>
+            <p>${userId}</p>
             <h1>Restablecer contraseña</h1>
             <form id="resetPasswordForm">
                 <input type="hidden" name="token" value="${token}" />
@@ -95,7 +96,7 @@ app.get('/reset-password', (req, res) => {
                             alert('Contraseña restablecida con éxito');
                         } else {
                             const errorData = await response.json();
-                            alert(`Error: ${errorData.message}`);
+                            alert(\`Error: \${errorData.message}\`);
                         }
                     } catch (error) {
                         console.error('Error al enviar la solicitud:', error);
@@ -105,7 +106,9 @@ app.get('/reset-password', (req, res) => {
             </script>
         </body>
         </html>
-    `);
+    `;
+
+    res.send(emailFormHTML);
 });
 
 app.post('/reset-password', async (req, res) => {
