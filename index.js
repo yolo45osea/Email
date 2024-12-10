@@ -66,8 +66,8 @@ app.get('/reset-password', (req, res) => {
         <body>
             <p>${userId}</>
             <h1>Restablecer contraseña</h1>
-            <form action="/reset-password/${token}" method="POST">
-                <input type="text" name="token" value="${token}" />
+            <form id="resetPasswordForm">
+                <input type="hidden" name="token" value="${token}" />
                 <label for="newPassword">Nueva contraseña:</label>
                 <input type="password" id="newPassword" name="newPassword" required />
                 <button type="submit">Restablecer</button>
