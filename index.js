@@ -2,7 +2,7 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 const app = express();
-const port = 587 || 3000;
+const port = 3000;
 
 // Configurar CORS para permitir todo
 app.use(cors());
@@ -17,14 +17,12 @@ app.post('/send-email', async (req, res) => {
           port: 587,
           secure: false, // true for 465, false for other ports
           auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
+            user: "benj.romeroc@duocuc.cl",
+            pass: "Josebenj@1979",
           },
           tls: {
             rejectUnauthorized: false
-          },
-          logger: true,  // Activar logs
-          debug: true    // Para obtener detalles del proceso de conexión
+          }
         });
 
         const mailOptions = {
