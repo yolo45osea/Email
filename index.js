@@ -53,6 +53,8 @@ const bcrypt = require('bcryptjs');
 
 app.get('/reset-password', (req, res) => {
     const { token } = req.query;
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userId = decoded.userId;
     res.send(`
         <!DOCTYPE html>
         <html>
@@ -60,6 +62,7 @@ app.get('/reset-password', (req, res) => {
             <title>Restablecer contraseña</title>
         </head>
         <body>
+            <p>${userId}</>
             <h1>Restablecer contraseña</h1>
             <form action="/reset-password" method="POST">
                 <input type="hidden" name="token" value="${token}" />
