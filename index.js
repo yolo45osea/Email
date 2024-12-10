@@ -51,7 +51,7 @@ app.post('/send-email', async (req, res) => {
 
 const bcrypt = require('bcryptjs');
 
-router.post('/reset-password', async (req, res) => {
+app.post('/reset-password', async (req, res) => {
   const { token, newPassword } = req.body;
 
   try {
