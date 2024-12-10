@@ -10,7 +10,12 @@ app.use(express.json());
 
 app.post('/send-email', async (req, res) => {
     try {
-        const { to, subject, text } = req.body;
+        const { to, subject, text, userId } = req.body;
+
+        const token = jwt.sign({ userId: userId }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
+        const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+
+        text = `Haz clic en este enlace para restablecer tu contraseña: ${resetLink}`;
 
         let transporter = nodemailer.createTransport({
           host: "smtp.gmail.com",
