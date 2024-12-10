@@ -13,12 +13,12 @@ app.post('/send-email', async (req, res) => {
         const { to, subject, text } = req.body;
 
         let transporter = nodemailer.createTransport({
-          host: "smtp.office365.com",
+          host: "smtp.gmail.com",
           port: 587,
           secure: false, // true for 465, false for other ports
           auth: {
-            user: "benj.romeroc@duocuc.cl",
-            pass: "Josebenj@1979",
+            user: "transferaeropuerto0@gmail.com",
+            pass: "ovax yhtj mdev nkig",
           },
           tls: {
             rejectUnauthorized: false
