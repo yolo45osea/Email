@@ -73,6 +73,37 @@ app.get('/reset-password', (req, res) => {
                 <input type="password" id="newPassword" name="newPassword" required />
                 <button type="submit">Restablecer</button>
             </form>
+
+            <script>
+                document.getElementById('resetPasswordForm').addEventListener('submit', async (event) => {
+                    event.preventDefault(); // Prevenir el envío normal del formulario
+        
+                    const token = document.querySelector('[name="token"]').value;
+                    const newPassword = document.getElementById('newPassword').value;
+        
+                    const data = { token, newPassword };
+        
+                    try {
+                        const response = await fetch('/reset-password', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data),
+                        });
+        
+                        if (response.ok) {
+                            alert('Contraseña restablecida con éxito');
+                        } else {
+                            const errorData = await response.json();
+                            alert(\`Error: \${errorData.message}\`);
+                        }
+                    } catch (error) {
+                        console.error('Error al enviar la solicitud:', error);
+                        alert('Ocurrió un error al procesar la solicitud');
+                    }
+                });
+            </script>
         </body>
         </html>
     `;
